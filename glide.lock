@@ -1,5 +1,5 @@
-hash: a03d420c53a3c1675b455dae4e55e7b821598b56c30e9b201b0b13589e31afd1
-updated: 2017-05-27T16:16:59.200508255+02:00
+hash: fde3bb302e3e5113f140be2c7ad89b5ef057b7a4836aa46131e9bcaaeb3f12be
+updated: 2017-05-27T19:20:40.667396332+02:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -96,6 +96,8 @@ imports:
 - name: github.com/coreos/etcd
   version: c400d05d0aa73e21e431c16145e558d624098018
   subpackages:
+  - Godeps/_workspace/src/github.com/ugorji/go/codec
+  - Godeps/_workspace/src/golang.org/x/net/context
   - client
   - pkg/pathutil
   - pkg/types
@@ -442,7 +444,7 @@ imports:
   - plugin/rewrite
   - router
 - name: github.com/xenolf/lego
-  version: 5dfe609afb1ebe9da97c9846d97a55415e5a5ccd
+  version: aaa8e70aec58a858b6bef0706b367dd5e8d58128
   subpackages:
   - acme
   - providers/dns
