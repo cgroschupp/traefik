@@ -27,7 +27,6 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"strings"
 	"sync"
 	"time"
 )
@@ -239,23 +238,23 @@ func (r *marathonClient) Ping() (bool, error) {
 	return true, nil
 }
 
-func (r *marathonClient) apiGet(path string, post, result interface{}) error {
-	return r.apiCall("GET", path, post, result)
+func (r *marathonClient) apiGet(uri string, post, result interface{}) error {
+	return r.apiCall("GET", uri, post, result)
 }
 
-func (r *marathonClient) apiPut(path string, post, result interface{}) error {
-	return r.apiCall("PUT", path, post, result)
+func (r *marathonClient) apiPut(uri string, post, result interface{}) error {
+	return r.apiCall("PUT", uri, post, result)
 }
 
-func (r *marathonClient) apiPost(path string, post, result interface{}) error {
-	return r.apiCall("POST", path, post, result)
+func (r *marathonClient) apiPost(uri string, post, result interface{}) error {
+	return r.apiCall("POST", uri, post, result)
 }
 
-func (r *marathonClient) apiDelete(path string, post, result interface{}) error {
-	return r.apiCall("DELETE", path, post, result)
+func (r *marathonClient) apiDelete(uri string, post, result interface{}) error {
+	return r.apiCall("DELETE", uri, post, result)
 }
 
-func (r *marathonClient) apiCall(method, path string, body, result interface{}) error {
+func (r *marathonClient) apiCall(method, url string, body, result interface{}) error {
 	for {
 		// step: marshall the request to json
 		var requestBody []byte
@@ -267,7 +266,7 @@ func (r *marathonClient) apiCall(method, path string, body, result interface{}) 
 		}
 
 		// step: create the API request
-		request, member, err := r.buildAPIRequest(method, path, bytes.NewReader(requestBody))
+		request, member, err := r.buildAPIRequest(method, url, bytes.NewReader(requestBody))
 		if err != nil {
 			return err
 		}
@@ -318,7 +317,7 @@ func (r *marathonClient) apiCall(method, path string, body, result interface{}) 
 }
 
 // buildAPIRequest creates a default API request
-func (r *marathonClient) buildAPIRequest(method, path string, reader io.Reader) (request *http.Request, member string, err error) {
+func (r *marathonClient) buildAPIRequest(method, uri string, reader io.Reader) (request *http.Request, member string, err error) {
 	// Grab a member from the cluster
 	member, err = r.hosts.getMember()
 	if err != nil {
@@ -326,22 +325,16 @@ func (r *marathonClient) buildAPIRequest(method, path string, reader io.Reader) 
 	}
 
 	// Build the HTTP request to Marathon
-	request, err = r.client.buildMarathonRequest(method, member, path, reader)
+	request, err = r.client.buildMarathonRequest(method, member, uri, reader)
 	if err != nil {
 		return nil, member, err
 	}
 	return request, member, nil
 }
 
-// buildMarathonRequest creates a new HTTP request and configures it according to the *httpClient configuration.
-// The path must not contain a leading "/", otherwise buildMarathonRequest will panic.
-func (rc *httpClient) buildMarathonRequest(method string, member string, path string, reader io.Reader) (request *http.Request, err error) {
-	if strings.HasPrefix(path, "/") {
-		panic(fmt.Sprintf("Path '%s' must not start with a leading slash", path))
-	}
-
+func (rc *httpClient) buildMarathonRequest(method string, member string, uri string, reader io.Reader) (request *http.Request, err error) {
 	// Create the endpoint URL
-	url := fmt.Sprintf("%s/%s", member, path)
+	url := fmt.Sprintf("%s/%s", member, uri)
 
 	// Instantiate an HTTP request
 	request, err = http.NewRequest(method, url, reader)

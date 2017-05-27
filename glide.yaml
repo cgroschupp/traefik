@@ -144,9 +144,12 @@ import:
   - proto
 - package: github.com/rancher/go-rancher
   version: 5b8f6cc26b355ba03d7611fce3844155b7baf05b
-- package: golang.org/x/oauth2/google
+- package: golang.org/x/oauth2
   version: 7fdf09982454086d5570c7db3e11f360194830ca
+  subpackages:
+  - google
 - package: github.com/googleapis/gax-go
   version: 9af46dd5a1713e8b5cd71106287eba3cefdde50b
 - package: google.golang.org/grpc
   version: v1.2.0
+- package: github.com/gophercloud/gophercloud

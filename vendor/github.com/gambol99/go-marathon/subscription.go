@@ -201,8 +201,8 @@ func (r *marathonClient) registerSSESubscription() error {
 // Subscribe adds a URL to Marathon's callback facility
 //	callback	: the URL you wish to subscribe
 func (r *marathonClient) Subscribe(callback string) error {
-	path := fmt.Sprintf("%s?callbackUrl=%s", marathonAPISubscription, callback)
-	return r.apiPost(path, "", nil)
+	uri := fmt.Sprintf("%s?callbackUrl=%s", marathonAPISubscription, callback)
+	return r.apiPost(uri, "", nil)
 
 }
 
