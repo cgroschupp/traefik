@@ -2,6 +2,7 @@ package openstack
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"text/template"
@@ -41,6 +42,8 @@ type Provider struct {
 
 type openstackInstance struct {
 	Server           servers.Server
+	Name		 string
+	ID		 string
 }
 
 type openstackClient struct {
@@ -151,6 +154,7 @@ func (p *Provider) Provide(configurationChan chan<- types.ConfigMessage, pool *s
 func (p *Provider) loadECSConfig(ctx context.Context, client *openstackClient) (*types.Configuration, error) {
 	var openstackFuncMap = template.FuncMap{
 		"getFrontendRule": p.getFrontendRule,
+		"filterFrontends": p.filterFrontends,
 	}
 
 	instances, err := p.listInstances(ctx, client)
@@ -183,6 +187,8 @@ func (p *Provider) listInstances(ctx context.Context, client *openstackClient) (
 		for _, s := range serverList {
 			instances = append(instances, openstackInstance{
 				s,
+				provider.Normalize(s.Name),
+				s.ID,
 			})
 		}
 		return true,nil
@@ -195,11 +201,11 @@ func (p *Provider) listInstances(ctx context.Context, client *openstackClient) (
 	return instances, nil
 }
 
-func (i openstackInstance) label(k string) string {
-	if v, found := i.Server.Metadata[k]; found {
-		return v
+func (i openstackInstance) label(label string) (string, error) {
+	if v, found := i.Server.Metadata[label]; found {
+		return v,nil
 	}
-	return ""
+	return "", errors.New("Label not found:" + label)
 }
 
 func (i openstackInstance) privateIP() string {
@@ -243,7 +249,7 @@ func (p *Provider) filterInstance(i openstackInstance) bool {
 		return false
 	}
 
-	label := i.label("traefik.enable")
+	label,_ := i.label("traefik.enable")
 	enabled := p.ExposedByDefault && label != "false" || label == "true"
 	if !enabled {
 		log.Debugf("Filtering disabled OpenStack instance %s (%s) (traefik.enabled = '%s')", i.Server.Name, i.Server.ID, label)
@@ -253,26 +259,32 @@ func (p *Provider) filterInstance(i openstackInstance) bool {
 	return true
 }
 
+func (p *Provider) filterFrontends(instances []openstackInstance) []openstackInstance {
+	byName := make(map[string]bool)
+
+	return fun.Filter(func(i openstackInstance) bool {
+		if _, found := byName[i.Name]; !found {
+			byName[i.Name] = true
+			return true
+		}
+
+		return false
+	}, instances).([]openstackInstance)
+}
+
+
 func (p *Provider) getFrontendRule(i openstackInstance) string {
-	if label := i.label("traefik.frontend.rule"); label != "" {
+	if label,err := i.label("traefik.frontend.rule"); err == nil {
 		return label
 	}
-	return "Host:" + strings.ToLower(strings.Replace(i.Server.Name, "_", "-", -1)) + "." + p.Domain
+	return "Host:" + strings.ToLower(strings.Replace(i.Name, "_", "-", -1)) + "." + p.Domain
 }
 
 func (i openstackInstance) Protocol() string {
-	if label := i.label("traefik.protocol"); label != "" {
+	if label, err := i.label("traefik.protocol"); err == nil {
 		return label
 	}
 	return "http"
-}
-
-func (i openstackInstance) Name() string {
-	return i.Server.Name
-}
-
-func (i openstackInstance) ID() string {
-	return i.Server.ID
 }
 
 func (i openstackInstance) Host() string {
@@ -280,33 +292,49 @@ func (i openstackInstance) Host() string {
 }
 
 func (i openstackInstance) Port() string {
-	// TODO: port
+	if label, err := i.label("traefik.port"); err == nil {
+		return label
+	}
 	return "80"
 }
 
 func (i openstackInstance) Weight() string {
-	if label := i.label("traefik.weight"); label != "" {
+	if label, err := i.label("traefik.weight"); err == nil {
 		return label
 	}
 	return "0"
 }
 
 func (i openstackInstance) PassHostHeader() string {
-	if label := i.label("traefik.frontend.passHostHeader"); label != "" {
+	if label, err := i.label("traefik.frontend.passHostHeader"); err == nil {
 		return label
 	}
 	return "true"
 }
 
 func (i openstackInstance) Priority() string {
-	if label := i.label("traefik.frontend.priority"); label != "" {
+	if label, err := i.label("traefik.frontend.priority"); err == nil {
 		return label
 	}
 	return "0"
 }
 
+func (i openstackInstance) Backend() string {
+	if label, err := i.label("traefik.backend"); err == nil {
+                return provider.Normalize(label)
+	}
+	return provider.Normalize(i.Name)
+}
+
+func (i openstackInstance) BalancerMethod() string {
+	if label, err := i.label("traefik.backend.loadbalancer.method"); err == nil {
+		return label
+	}
+	return "wrr"
+}
+
 func (i openstackInstance) EntryPoints() []string {
-	if label := i.label("traefik.frontend.entryPoints"); label != "" {
+	if label, err := i.label("traefik.frontend.entryPoints"); err == nil {
 		return strings.Split(label, ",")
 	}
 	return []string{}
