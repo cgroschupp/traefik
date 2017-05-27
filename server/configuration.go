@@ -25,6 +25,7 @@ import (
 	"github.com/containous/traefik/provider/mesos"
 	"github.com/containous/traefik/provider/rancher"
 	"github.com/containous/traefik/provider/zk"
+	"github.com/containous/traefik/provider/openstack"
 	"github.com/containous/traefik/types"
 )
 
@@ -73,6 +74,7 @@ type GlobalConfiguration struct {
 	ECS                       *ecs.Provider           `description:"Enable ECS backend"`
 	Rancher                   *rancher.Provider       `description:"Enable Rancher backend"`
 	DynamoDB                  *dynamodb.Provider      `description:"Enable DynamoDB backend"`
+	OpenStack                 *openstack.Provider     `description:"Enable OpenStack backend"`
 }
 
 // DefaultEntryPoints holds default entry points
@@ -445,6 +447,15 @@ func NewTraefikDefaultPointersConfiguration() *TraefikConfiguration {
 	defaultECS.Cluster = "default"
 	defaultECS.Constraints = types.Constraints{}
 
+	//default OpenStack
+	var defaultOpenStack openstack.Provider
+	defaultOpenStack.Watch = true
+	defaultOpenStack.ExposedByDefault = true
+	defaultOpenStack.RefreshSeconds = 15
+	defaultOpenStack.Region = "default"
+	defaultOpenStack.Constraints = types.Constraints{}
+
+
 	//default Rancher
 	var defaultRancher rancher.Provider
 	defaultRancher.Watch = true
@@ -480,6 +491,7 @@ func NewTraefikDefaultPointersConfiguration() *TraefikConfiguration {
 		ECS:           &defaultECS,
 		Rancher:       &defaultRancher,
 		DynamoDB:      &defaultDynamoDB,
+		OpenStack:     &defaultOpenStack,
 		Retry:         &Retry{},
 		HealthCheck:   &HealthCheckConfig{},
 		AccessLog:     &defaultAccessLog,
