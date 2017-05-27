@@ -450,8 +450,8 @@ func NewTraefikDefaultPointersConfiguration() *TraefikConfiguration {
 	//default OpenStack
 	var defaultOpenStack openstack.Provider
 	defaultOpenStack.Watch = true
-	defaultOpenStack.ExposedByDefault = true
-	defaultOpenStack.RefreshSeconds = 15
+	defaultOpenStack.ExposedByDefault = false
+	defaultOpenStack.RefreshSeconds = 60
 	defaultOpenStack.Region = "default"
 	defaultOpenStack.Constraints = types.Constraints{}
 
