@@ -153,3 +153,5 @@ import:
 - package: google.golang.org/grpc
   version: v1.2.0
 - package: github.com/gophercloud/gophercloud
+- package: github.com/prometheus/client_golang
+  version: 0.8.0
