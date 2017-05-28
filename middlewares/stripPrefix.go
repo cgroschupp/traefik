@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// ForwardedPrefixHeader is the default header to set prefix
 const ForwardedPrefixHeader = "X-Forwarded-Prefix"
 
 // StripPrefix is a middleware used to strip prefix from an URL request
