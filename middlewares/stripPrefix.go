@@ -5,9 +5,7 @@ import (
 	"strings"
 )
 
-const (
-	ForwardedPrefixHeader = "X-Forwarded-Prefix"
-)
+const ForwardedPrefixHeader = "X-Forwarded-Prefix"
 
 // StripPrefix is a middleware used to strip prefix from an URL request
 type StripPrefix struct {
