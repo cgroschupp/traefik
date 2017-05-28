@@ -1,10 +1,9 @@
-package middlewares_test
+package middlewares
 
 import (
 	"net/http"
 	"testing"
 
-	"github.com/containous/traefik/middlewares"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,11 +19,11 @@ func TestReplacePath(t *testing.T) {
 		t.Run(path, func(t *testing.T) {
 
 			var expectedPath, actualHeader string
-			handler := &middlewares.ReplacePath{
+			handler := &ReplacePath{
 				Path: replacementPath,
 				Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					expectedPath = r.URL.Path
-					actualHeader = r.Header.Get(middlewares.ReplacedPathHeader)
+					actualHeader = r.Header.Get(ReplacedPathHeader)
 				}),
 			}
 
