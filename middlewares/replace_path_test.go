@@ -32,7 +32,7 @@ func TestReplacePath(t *testing.T) {
 
 			handler.ServeHTTP(nil, req)
 			assert.Equal(t, replacementPath, expectedPath, "%s: unexpected path.", path)
-			assert.Equal(t, path, actualHeader, "%s: unexpected replaced path header.", path)
+			assert.Equal(t, path, actualHeader, "%s: unexpected '%s' header.", path, ReplacedPathHeader)
 		})
 	}
 }

@@ -92,7 +92,7 @@ func TestStripPrefixRegex(t *testing.T) {
 
 			assert.Equal(t, test.expectedStatusCode, resp.StatusCode, "%s: unexpected status code.", test.desc)
 			assert.Equal(t, test.expectedPath, actualPath, "%s: unexpected path.", test.desc)
-			assert.Equal(t, test.expectedHeader, actualHeader, "%s: unexpected forwarded prefix header.", test.desc)
+			assert.Equal(t, test.expectedHeader, actualHeader, "%s: unexpected '%s' header.", test.desc, ForwardedPrefixHeader)
 		})
 	}
 
