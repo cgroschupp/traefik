@@ -77,7 +77,7 @@ func (p *Provider) createClient() (*openstackClient, error) {
 	}, nil
 }
 
-// Provide allows the ecs provider to provide configurations to traefik
+// Provide allows the OpenStack provider to provide configurations to traefik
 // using the given configuration channel.
 func (p *Provider) Provide(configurationChan chan<- types.ConfigMessage, pool *safe.Pool, constraints types.Constraints) error {
 
@@ -105,7 +105,7 @@ func (p *Provider) Provide(configurationChan chan<- types.ConfigMessage, pool *s
 				return err
 			}
 
-			configuration, err := p.loadECSConfig(ctx, aws)
+			configuration, err := p.loadOpenstackConfig(ctx, aws)
 			if err != nil {
 				return handleCanceled(ctx, err)
 			}
@@ -121,7 +121,7 @@ func (p *Provider) Provide(configurationChan chan<- types.ConfigMessage, pool *s
 				for {
 					select {
 					case <-reload.C:
-						configuration, err := p.loadECSConfig(ctx, aws)
+						configuration, err := p.loadOpenstackConfig(ctx, aws)
 						if err != nil {
 							return handleCanceled(ctx, err)
 						}
@@ -151,7 +151,7 @@ func (p *Provider) Provide(configurationChan chan<- types.ConfigMessage, pool *s
 	return nil
 }
 
-func (p *Provider) loadECSConfig(ctx context.Context, client *openstackClient) (*types.Configuration, error) {
+func (p *Provider) loadOpenstackConfig(ctx context.Context, client *openstackClient) (*types.Configuration, error) {
 	var openstackFuncMap = template.FuncMap{
 		"getFrontendRule": p.getFrontendRule,
 		"filterFrontends": p.filterFrontends,
@@ -172,7 +172,7 @@ func (p *Provider) loadECSConfig(ctx context.Context, client *openstackClient) (
 }
 
 // Find all running Provider tasks in a cluster, also collect the task definitions (for docker labels)
-// and the EC2 instance data
+// and the OpenStack instance data
 func (p *Provider) listInstances(ctx context.Context, client *openstackClient) ([]openstackInstance, error) {
 	opts := servers.ListOpts{}
 	pager := servers.List(client.serviceClient, opts)
@@ -193,7 +193,7 @@ func (p *Provider) listInstances(ctx context.Context, client *openstackClient) (
 		}
 		return true,nil
 	})
-	// TODO: err
+
 	if err != nil {
 		return nil, fmt.Errorf("error list servers")
 	}
