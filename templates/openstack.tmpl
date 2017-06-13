@@ -3,8 +3,6 @@
     url = "{{ .Protocol }}://{{ .Host }}:{{ .Port }}"
     weight = {{ .Weight }}
 
-    [backends.backend-{{ .Backend }}.loadbalancer]
-    method = "{{ .BalancerMethod }}"
 {{end}}
 
 [frontends]{{range filterFrontends .Instances}}

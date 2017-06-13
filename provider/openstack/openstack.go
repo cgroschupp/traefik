@@ -263,8 +263,8 @@ func (p *Provider) filterFrontends(instances []openstackInstance) []openstackIns
 	byName := make(map[string]bool)
 
 	return fun.Filter(func(i openstackInstance) bool {
-		if _, found := byName[i.Name]; !found {
-			byName[i.Name] = true
+		if _, found := byName[i.Backend()]; !found {
+			byName[i.Backend()] = true
 			return true
 		}
 
@@ -337,5 +337,5 @@ func (i openstackInstance) EntryPoints() []string {
 	if label, err := i.label("traefik.frontend.entryPoints"); err == nil {
 		return strings.Split(label, ",")
 	}
-	return []string{}
+	return []string{"http", "https"}
 }
