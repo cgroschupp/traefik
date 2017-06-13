@@ -1,5 +1,5 @@
-hash: 6535e5faaf0a87d89bb74841d60988f6d13ead827efa02d509fd1914aeb6e4d4
-updated: 2017-06-13T19:33:57.982202907+02:00
+hash: a53dc6dcb76a965b28cfb9d9f834ca457283fd173f86e61367ba9cd86b2f5b35
+updated: 2017-06-13T20:56:16.849828413+02:00
 imports:
 - name: cloud.google.com/go
   version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
@@ -240,6 +240,18 @@ imports:
   version: bbcb9da2d746f8bdbd6a936686a0a6067ada0ec5
 - name: github.com/googleapis/gax-go
   version: 9af46dd5a1713e8b5cd71106287eba3cefdde50b
+- name: github.com/gophercloud/gophercloud
+  version: 3027adb1ce72bc52b87b2decccc7852574b90031
+  subpackages:
+  - openstack
+  - openstack/compute/v2/flavors
+  - openstack/compute/v2/images
+  - openstack/compute/v2/servers
+  - openstack/identity/v2/tenants
+  - openstack/identity/v2/tokens
+  - openstack/identity/v3/tokens
+  - openstack/utils
+  - pagination
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/websocket
@@ -435,7 +447,9 @@ imports:
   - plugin/rewrite
   - router
 - name: github.com/xenolf/lego
-  version: 5dfe609afb1ebe9da97c9846d97a55415e5a5ccd
+  version: d25dcb68c2503cd382e135658ea1c1efc2ed13ef
+  repo: https://github.com/cgroschupp/lego.git
+  vcs: git
   subpackages:
   - acme
   - providers/dns
@@ -453,6 +467,7 @@ imports:
   - providers/dns/linode
   - providers/dns/namecheap
   - providers/dns/ns1
+  - providers/dns/otc
   - providers/dns/ovh
   - providers/dns/pdns
   - providers/dns/rackspace
